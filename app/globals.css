@@ -1,26 +1,106 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --secondary: #1e2938;
+  --primary: #0d9488;
+  --primary-l: #0d9488;
+  --background: #f3f4f6;
+  --foreground: #ffffff;
+
+  --grey: #4f4f4f;
+  --black: #000000;
+  --white: #ffffff;
+  --red: #ff4040;
+
+  --bd-primary: #e4e4e7;
+
+  --icon-grey: #71717a;
+
+  --header: #292929;
+  --sub-text: #71717b;
+  --input-text: #3f3f46;
+
+  --input-bg: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-secondary: var(--secondary);
+  --color-primary: var(--primary);
+  --color-primary-l: var(--primary-l);
+
+  --color-grey: var(--grey);
+  --color-black: var(--black);
+  --color-white: var(--white);
+  --color-red: var(--red);
+
+  --color-bd-primary: var(--bd-primary);
+
+  --color-icon-grey: var(--icon-grey);
+
+  --color-header: var(--header);
+  --color-sub-text: var(--sub-text);
+  --color-input-text: var(--input-text);
+
+  --color-input-bg: var(--input-bg);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme="dark"] {
+  --background: #0f172a;
+  --foreground: #1e293b;
+
+  --primary-l: #202833;
+  --secondary: #0d9488;
+
+  --bd-primary: #0f172a;
+
+  --icon-grey: #9f9fa9;
+
+  --header: #ffffff;
+  --sub-text: #ffffff;
+  --input-text: #ffffff;
+
+  --input-bg: #0f172a;
 }
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f172a;
+    --foreground: #1e293b;
+    --primary-l: #4f4f4f;
+    --secondary: #0d9488;
+  }
+} */
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes otp-shake {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+.otp-shake {
+  animation: otp-shake 0.35s;
 }
