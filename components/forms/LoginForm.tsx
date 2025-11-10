@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import TextInput from "@/components/ui/TextInput";
 import CustomButton from "@/components/ui/CustomButton";
 import { StyledCheckbox } from "@/components/ui/CustomCheckbox";
@@ -8,21 +8,48 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
-  const [remember, setRemember] = React.useState(false);
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [remember, setRemember] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ email, password, remember });
-    // 🔐 send to your API here
+    setError(null);
 
-    router.push("/two-factor");
+    const emailTrim = email.trim();
+    if (!emailTrim || !password) {
+      setError("Email and password are required.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailTrim, password }),
+      });
+      const txt = await res.text();
+      const data = txt ? JSON.parse(txt) : {};
+      if (!res.ok) throw new Error(data?.message || "Login failed");
+
+      router.push(
+        `/two-factor?user_id=${data.user_id}` +
+          `&email=${encodeURIComponent(emailTrim)}` +
+          `&remember=${remember ? "1" : "0"}`
+      );
+    } catch (err: any) {
+      setError(err?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+    <form onSubmit={onSubmit} className="mt-6 space-y-5">
       <TextInput
         placeholder="Email / Username"
         type="email"
@@ -49,6 +76,8 @@ export default function LoginForm() {
         onChange={(e) => setPassword(e.target.value)}
       />
 
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+
       <div className="flex justify-between items-center">
         <StyledCheckbox
           checked={remember}
@@ -63,8 +92,13 @@ export default function LoginForm() {
         </Link>
       </div>
 
-      <CustomButton type="submit" variant="primary" className="w-full mt-4">
-        Log in
+      <CustomButton
+        type="submit"
+        variant="primary"
+        className="w-full mt-4"
+        disabled={loading}
+      >
+        {loading ? <span className="loader" /> : "Log in"}
       </CustomButton>
     </form>
   );

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import TwoFactorForm from "@/components/forms/TwoFactorForm";
 
 export default function TwoFactorPage() {
@@ -8,7 +9,9 @@ export default function TwoFactorPage() {
         <p className="mt-2 text-sm text-sub-text">
           Enter the 6-digit code sent to your email or authenticator app
         </p>
-        <TwoFactorForm />
+        <Suspense fallback={<div>Loading...</div>}>
+          <TwoFactorForm />
+        </Suspense>
       </div>
     </>
   );
