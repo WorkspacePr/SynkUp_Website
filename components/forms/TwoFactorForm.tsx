@@ -118,7 +118,7 @@ export default function TwoFactorForm() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/verify-otp/", {
+      const res = await fetch("/api/auth/verify-otp/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, code, remember }),
@@ -131,13 +131,25 @@ export default function TwoFactorForm() {
         data = txt ? JSON.parse(txt) : {};
       } catch {}
 
-      if (!res.ok) throw new Error(data?.message || "Invalid code");
+      if (res.ok) {
+        // Refresh the router to pick up new cookies
+        router.refresh();
+
+        // Small delay to ensure cookie is set
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect") || "/dashboard";
+        router.push(redirect);
+      } else {
+        setError(data.message);
+      }
 
       try {
         sessionStorage.removeItem("remember_login");
       } catch {}
 
-      router.replace("/dashboard");
+      // router.replace("/dashboard");
     } catch (e: any) {
       setError(e?.message || "Verification failed");
     } finally {
@@ -157,7 +169,7 @@ export default function TwoFactorForm() {
     setResendLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/resend-otp", {
+      const res = await fetch("/api/auth/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId }),

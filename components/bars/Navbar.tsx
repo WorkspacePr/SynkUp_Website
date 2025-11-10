@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Navbar() {
   return (
-    <header className="w-full flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-white text-gray-800 shadow-sm">
+    <header className="w-full flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-foreground text-gray-800 shadow-sm">
       {/* Left section */}
       <div className="flex items-center gap-3">
         <button className="lg:hidden p-2 rounded-md hover:bg-gray-100">
@@ -19,7 +19,7 @@ export default function Navbar() {
           <input
             type="text"
             placeholder="Search"
-            className="w-full border border-gray-300 rounded-md pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 text-gray-700"
+            className="w-full border border-bd-primary rounded-md pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-input-bg text-input-text"
           />
         </div>
       </div>
@@ -35,13 +35,13 @@ export default function Navbar() {
             className="rounded-full"
           />
           <div className="text-sm">
-            <p className="font-semibold text-gray-800">John Doe</p>
-            <p className="text-gray-500 text-xs">Admin</p>
+            <p className="font-semibold text-header">John Doe</p>
+            <p className="text-sub-text text-xs">Admin</p>
           </div>
         </div>
 
         <button className="relative p-2 rounded-full hover:bg-gray-100 transition">
-          <Bell size={20} className="text-gray-600" />
+          <Bell size={20} className="text-icon-grey" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
         </button>
       </div>

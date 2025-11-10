@@ -41,7 +41,7 @@ export default function ResetPasswordForm() {
 
     setBusy(true);
     try {
-      const res = await fetch("/api/password-reset/confirm", {
+      const res = await fetch("/api/auth/password-reset/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uid, token, new_password: password }),
