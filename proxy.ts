@@ -1,16 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const token = request.cookies.get('auth_token')?.value;
     const isAuthenticated = !!token;
-
-    console.log('=== MIDDLEWARE DEBUG ===');
-    console.log('Path:', pathname);
-    console.log('Has Token:', isAuthenticated);
-    console.log('All Cookies:', request.cookies.getAll());
-    console.log('=======================');
 
     // Protected routes
     const protectedRoutes = ['/dashboard'];
@@ -26,7 +20,6 @@ export function middleware(request: NextRequest) {
 
     // Redirect to login if accessing protected route without auth
     if (isProtectedRoute && !isAuthenticated) {
-        console.log('Redirecting to login - no token');
         const loginUrl = new URL('/login', request.url);
         loginUrl.searchParams.set('redirect', pathname);
         return NextResponse.redirect(loginUrl);
@@ -34,7 +27,6 @@ export function middleware(request: NextRequest) {
 
     // Redirect to dashboard if accessing auth routes while logged in
     if (isAuthRoute && isAuthenticated) {
-        console.log('Redirecting to dashboard - already logged in');
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
