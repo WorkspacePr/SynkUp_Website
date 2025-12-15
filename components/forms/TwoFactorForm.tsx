@@ -1,20 +1,21 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import TextInput from "@/components/ui/TextInput";
 import CustomButton from "@/components/ui/CustomButton";
 import Link from "next/link";
 import BackIcon from "@/assests/icons/svg/BackIcon";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function TwoFactorForm() {
-  const [email, setEmail] = React.useState("");
   const router = useRouter();
+  const sp = useSearchParams();
+  const email = sp.get("email") ?? "";
+  const userId = Number(sp.get("user_id") ?? "0");
 
   const CODE_LENGTH = 6;
-
   const [otp, setOtp] = useState<string[]>(Array(CODE_LENGTH).fill(""));
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+
   const [error, setError] = // error message
     useState<string | null>(null);
   const [loading, setLoading] = useState(false); // loading state for API call
@@ -22,29 +23,29 @@ export default function TwoFactorForm() {
   const [resendLoading, setResendLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
 
+  useEffect(() => {
+    if (!userId) {
+      // if user navigates here directly, bounce them back
+      router.replace("/login");
+    }
+  }, [userId, router]);
+
   const [mounted, setMounted] = useState(false);
   const [suppressGuard, setSuppressGuard] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  type TFLocationState = {
-    email?: string;
-    two_factor_method?: "totp" | "email";
-    remember?: boolean;
-  };
-
-  // read remember from state or sessionStorage fallback
-  const rememberedFromSS = (() => {
+  const rememberQS = sp.get("remember");
+  const rememberFromQS = rememberQS === "1" || rememberQS === "true";
+  const rememberFromSS = (() => {
     try {
-      return JSON.parse(sessionStorage.getItem("adminRemember") || "false");
+      return JSON.parse(sessionStorage.getItem("remember_login") || "false");
     } catch {
       return false;
     }
   })();
-  //   const [remember, _setRemember] = useState<boolean>(
-  //     state?.remember ?? rememberedFromSS
-  //   );
+  const remember = rememberFromQS || rememberFromSS;
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -81,6 +82,10 @@ export default function TwoFactorForm() {
     next[index] = digit;
     setOtp(next);
 
+    if (digit && index === CODE_LENGTH - 1 && next.every((d) => d)) {
+      void submitCode(next.join(""));
+    }
+
     // Autofocus next field if a digit was entered
     if (digit && index < CODE_LENGTH - 1) {
       inputRefs.current[index + 1]?.focus();
@@ -103,14 +108,80 @@ export default function TwoFactorForm() {
     }
   };
 
-  const isComplete = otp.every((d) => d !== ""); // check all digits filled
+  const isComplete = otp.every((d) => d !== "");
+
+  async function submitCode(code: string) {
+    if (!userId) {
+      setError("Missing user reference. Please go back and login again.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/auth/verify-otp/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, code, remember }),
+      });
+
+      // Defensive parse to avoid "Unexpected token <" if something slips
+      const txt = await res.text();
+      let data: any = {};
+      try {
+        data = txt ? JSON.parse(txt) : {};
+      } catch {}
+
+      if (res.ok) {
+        // Refresh the router to pick up new cookies
+        router.refresh();
+
+        // Small delay to ensure cookie is set
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect") || "/dashboard";
+        router.push(redirect);
+      } else {
+        setError(data.message);
+      }
+
+      try {
+        sessionStorage.removeItem("remember_login");
+      } catch {}
+
+      // router.replace("/dashboard");
+    } catch (e: any) {
+      setError(e?.message || "Verification failed");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ email });
-    // 🔐 send to your API here
+    const code = otp.join("");
+    if (code.length !== CODE_LENGTH) return;
+    void submitCode(code);
+  };
 
-    router.push("/dashboard");
+  const handleResend = async () => {
+    if (!userId) return;
+    setResendLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/auth/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "Could not resend code");
+      setCooldown(60); // 60s lockout (tweak as you like)
+    } catch (e: any) {
+      setError(e?.message || "Could not resend code");
+    } finally {
+      setResendLoading(false);
+    }
   };
 
   const handlePaste = (
@@ -161,9 +232,7 @@ export default function TwoFactorForm() {
 
           const state =
             (isFocused ? " ring-2 ring-primary/30 scale-[1.02]" : "") +
-            (isFilled
-              ? " border-primary/70"
-              : "");
+            (isFilled ? " border-primary/70" : "");
 
           return (
             <input
@@ -186,21 +255,28 @@ export default function TwoFactorForm() {
               }}
               autoComplete={idx === 0 ? "one-time-code" : "off"}
               onPaste={handlePaste}
+              disabled={loading}
             />
           );
         })}
       </div>
 
+      {error && (
+        <p id="otp-error" className="text-red-500 text-sm mb-3">
+          {error}
+        </p>
+      )}
+
       {/* Resend link */}
       <div className="text-center">
         <button
           type="button"
-          // onClick={handleResend}
+          onClick={handleResend}
           className="text-primary text-xs hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={cooldown > 0 || resendLoading}
         >
           {resendLoading
-            ? "Sending..."
+            ? "Sending…"
             : cooldown > 0
             ? `Resend in ${String(Math.floor(cooldown / 60)).padStart(
                 2,
@@ -213,11 +289,11 @@ export default function TwoFactorForm() {
       <CustomButton
         type="submit"
         variant="primary"
-        // disabled={!isComplete || loading}
+        disabled={!isComplete || loading}
         className="w-full mt-4"
       >
-        {/* {loading ? <span className="loader" /> : "Verify"} */}
-        Verify
+        {loading ? <span className="loader" /> : "Verify"}
+        {/* Verify */}
       </CustomButton>
 
       <div className="w-full flex justify-center mt-4">
