@@ -1,16 +1,12 @@
-<<<<<<< HEAD
+"use client";
 import Card from "@/components/bars/Card";
+import { useAuth } from "@/lib/auth-context";
 import SystemStatusCard from "@/components/bars/Systemstatuscard";
 import ModuleUsageChart from "@/components/bars/Moduleusagechart";
 import ActiveUsersChart from "@/components/bars/Activeuserschart";
 import PercentageChart from "@/components/bars/Percentagechart";
 import RecentActivities from "@/components/bars/Recentactivities";
 import { Users, RefreshCw, Building2, Activity, Ban, AlertTriangle } from "lucide-react";
-=======
-"use client";
-
-import { useAuth } from "@/lib/auth-context";
->>>>>>> 273865ca88080846dace092fcd4518b4cc48c09f
 
 export default function DashboardPage() {
   const { user, loading, logout } = useAuth();
@@ -20,7 +16,6 @@ export default function DashboardPage() {
   }
   
   return (
-<<<<<<< HEAD
     <div className="p-8">
       <h1 className="text-3xl font-bold text-header mb-8">Dashboard</h1>
 
@@ -74,17 +69,6 @@ export default function DashboardPage() {
           iconColor="#FFC107"
           iconBg="rgba(255, 193, 7, 0.1)"
         />
-=======
-    <div className="p-8 bg-background text-gray-800 min-h-screen">
-      <h1 className="text-2xl font-semibold mb-4">Dashboard</h1>
-
-      <div className="bg-foreground rounded-lg shadow-sm p-6 border border-gray-200">
-        <p className="text-gray-600">
-          Overview of your activities, analytics, or quick links can go here.
-          Use the sidebar to navigate between different sections such as
-          Organizations, Billing, and Reports.
-        </p>
->>>>>>> 273865ca88080846dace092fcd4518b4cc48c09f
       </div>
 
       {/* Charts Section */}
