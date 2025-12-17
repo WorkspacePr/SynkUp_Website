@@ -65,7 +65,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="h-screen w-64 bg-foreground border-r border-gray-200 text-gray-800 flex flex-col justify-between shadow-sm">
+    <aside className="h-screen w-60 bg-foreground border-r border-gray-200 text-gray-800 flex flex-col justify-between shadow-sm">
       {/* Top section */}
       <div>
         <div className="p-6 font-bold text-xl text-blue-600">Synkup</div>
