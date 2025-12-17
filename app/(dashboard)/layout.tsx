@@ -1,24 +1,28 @@
-import Navbar from "@/components/bars/Navbar";
+"use client";
+
+import { useState } from "react";
 import Sidebar from "@/components/bars/Sidebar";
+import Navbar from "@/components/bars/Navbar";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col">
-        {/* Navbar */}
-        <Navbar />
-
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto">{children}</main>
-      </div>
+    <div className="min-h-screen bg-background">
+      {/* Fixed Navbar at top - adjusts based on sidebar */}
+      <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
+      
+      {/* Sidebar full height from top */}
+      <Sidebar isOpen={sidebarOpen} />
+      
+      {/* Main Content with top padding for navbar and left margin for sidebar */}
+      <main className={`pt-16 min-h-screen transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'}`}>
+        {children}
+      </main>
     </div>
   );
 }

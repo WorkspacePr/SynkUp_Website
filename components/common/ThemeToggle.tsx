@@ -11,10 +11,7 @@ export function ThemeToggle() {
   React.useEffect(() => {
     setMounted(true);
     // read current attribute set by the layout script
-    const t =
-      (document.documentElement.getAttribute("data-theme") as
-        | "light"
-        | "dark") || "light";
+    const t = (document.documentElement.getAttribute("data-theme") as "light" | "dark") || "light";
     setTheme(t);
   }, []);
 
@@ -31,9 +28,7 @@ export function ThemeToggle() {
     return (
       <button
         aria-label="Toggle theme"
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full
-                   bg-zinc-200 text-zinc-700 transition-colors"
-        // keep it inert until mounted
+        className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-zinc-200 text-zinc-700 transition-colors"
         disabled
       >
         <SunIcon className="h-5 w-5" />
@@ -45,11 +40,7 @@ export function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label="Toggle theme"
-      className="inline-flex h-10 w-10 items-center justify-center rounded-full
-                 bg-zinc-200 text-zinc-700 hover:bg-zinc-300
-                 transition-colors
-                 [data-theme=dark]:bg-zinc-800 [data-theme=dark]:text-zinc-200
-                 [data-theme=dark]:hover:bg-zinc-700"
+      className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-zinc-200 text-zinc-700 hover:bg-zinc-300 transition-colors [data-theme=dark]:bg-zinc-800 [data-theme=dark]:text-zinc-200 [data-theme=dark]:hover:bg-zinc-700"
     >
       <span suppressHydrationWarning>
         {theme === "dark" ? (
