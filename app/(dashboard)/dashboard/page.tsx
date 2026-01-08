@@ -14,7 +14,7 @@ export default function DashboardPage() {
   if (loading) {
     return <div>Loading...</div>;
   }
-  
+
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold text-header mb-8">Dashboard</h1>
