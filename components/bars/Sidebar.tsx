@@ -1,34 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { 
-  LayoutDashboard, 
-  Building2, 
-  CreditCard, 
-  Package, 
-  Settings as SettingsIcon, 
+import {
+  LayoutDashboard,
+  Building2,
+  CreditCard,
+  Package,
+  Settings as SettingsIcon,
   FileText,
   HelpCircle,
   LogOut,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
   { icon: Building2, label: "Organizations", href: "/organizations" },
-  { 
-    icon: CreditCard, 
-    label: "Billing", 
+  {
+    icon: CreditCard,
+    label: "Billing",
     href: "/billing",
     submenu: [
       { label: "Organizations", href: "/billing/" },
       { label: "Subscription", href: "/billing/subscription" },
       { label: "Settings", href: "/billing/settings" },
       { label: "Report", href: "/billing/report" },
-    ]
+    ],
   },
   { icon: Package, label: "Modules", href: "/modules" },
   { icon: SettingsIcon, label: "Configurations", href: "/configurations" },
@@ -41,16 +41,29 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>("Billing");
 
   const toggleSubmenu = (label: string) => {
     setOpenSubmenu(openSubmenu === label ? null : label);
   };
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+    } finally {
+      router.push("/login");
+    }
+  };
+
   return (
-    <aside className={`bg-foreground border-r border-bd-primary flex flex-col fixed left-0 top-0 bottom-0 z-40 transition-all duration-300 ${
-      isOpen ? 'w-64' : 'w-0 overflow-hidden'
-    }`}>
+    <aside
+      className={`bg-foreground border-r border-bd-primary flex flex-col fixed left-0 top-0 bottom-0 z-40 transition-all duration-300 ${
+        isOpen ? "w-64" : "w-0 overflow-hidden"
+      }`}
+    >
       {/* Logo */}
       <div className="px-6 py-5 border-b border-bd-primary flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-2">
@@ -65,10 +78,11 @@ export default function Sidebar({ isOpen }: SidebarProps) {
       <nav className="flex-1 px-3 py-4 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href + "/");
           const hasSubmenu = item.submenu && item.submenu.length > 0;
           const isSubmenuOpen = openSubmenu === item.label;
-          
+
           return (
             <div key={item.href}>
               {hasSubmenu ? (
@@ -91,7 +105,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                       <ChevronRight className="w-4 h-4" />
                     )}
                   </button>
-                  
+
                   {/* Submenu */}
                   {isSubmenuOpen && (
                     <div className="ml-11 space-y-1 mb-2">
@@ -148,7 +162,10 @@ export default function Sidebar({ isOpen }: SidebarProps) {
           <HelpCircle className="w-5 h-5" />
           <span className="text-sm font-medium">Support</span>
         </Link>
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sub-text hover:bg-background hover:text-red transition-all">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sub-text hover:bg-background hover:text-red transition-all"
+        >
           <LogOut className="w-5 h-5" />
           <span className="text-sm font-medium">Log Out</span>
         </button>

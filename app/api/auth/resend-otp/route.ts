@@ -20,10 +20,11 @@ export async function POST(req: Request) {
             );
         }
 
-        const user_id = Number(body?.user_id ?? 0);
-        if (!user_id) {
+        const email = String(body?.email ?? "").trim();
+
+        if (!email) {
             return NextResponse.json(
-                { message: "user_id is required" },
+                { message: "Email is required" },
                 { status: 400 }
             );
         }
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id }),
+                body: JSON.stringify({ email }),
             }
         );
 

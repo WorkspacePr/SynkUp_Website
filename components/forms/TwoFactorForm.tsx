@@ -111,7 +111,7 @@ export default function TwoFactorForm() {
   const isComplete = otp.every((d) => d !== "");
 
   async function submitCode(code: string) {
-    if (!userId) {
+    if (!email) {
       setError("Missing user reference. Please go back and login again.");
       return;
     }
@@ -121,7 +121,7 @@ export default function TwoFactorForm() {
       const res = await fetch("/api/auth/verify-otp/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, code, remember }),
+        body: JSON.stringify({ email: email, code, remember }),
       });
 
       // Defensive parse to avoid "Unexpected token <" if something slips
@@ -165,14 +165,14 @@ export default function TwoFactorForm() {
   };
 
   const handleResend = async () => {
-    if (!userId) return;
+    if (!email) return;
     setResendLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/auth/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId }),
+        body: JSON.stringify({ email: email }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.message || "Could not resend code");
