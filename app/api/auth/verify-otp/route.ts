@@ -13,7 +13,7 @@ interface VerifyOTPResponse {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const user_id = Number(body?.user_id ?? 0);
+        const email = String(body?.email ?? "").trim();
         const code = String(body?.code ?? "").trim();
 
         const rememberRaw = body?.remember;
@@ -23,15 +23,16 @@ export async function POST(req: Request) {
             rememberRaw === 1 ||
             rememberRaw === "1";
 
-        if (!user_id || !code) {
+        if (!email || !code) {
             return NextResponse.json(
-                { message: "user_id and code are required" },
+                { message: "email and code are required" },
                 { status: 400 }
             );
         }
 
+
         const payload = {
-            user_id,
+            email,
             code,
             remember,
         };
