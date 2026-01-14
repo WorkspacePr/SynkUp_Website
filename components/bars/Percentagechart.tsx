@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useRef } from "react";
 import { Chart, ArcElement, Tooltip, Legend, DoughnutController } from "chart.js";
 
@@ -36,7 +35,7 @@ export default function PercentageChart() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: "75%",
+        cutout: "70%",
         plugins: {
           legend: {
             display: false,
@@ -66,13 +65,12 @@ export default function PercentageChart() {
   }, []);
 
   return (
-    <div className="bg-foreground rounded-xl p-6 shadow-sm border border-bd-primary col-span-2">
+    <div className="bg-foreground rounded-xl p-6 shadow-sm border border-bd-primary">
       <h3 className="text-sm font-semibold text-header uppercase tracking-wide mb-6 text-center">
         Percentage
       </h3>
-
-      <div className="relative h-64 flex items-center justify-center">
-        <canvas ref={chartRef} className="max-w-xs mx-auto"></canvas>
+      <div className="relative h-64 mb-4">
+        <canvas ref={chartRef}></canvas>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="text-3xl font-bold text-primary">99%</div>
@@ -80,18 +78,17 @@ export default function PercentageChart() {
           </div>
         </div>
       </div>
-
       {/* Legend */}
-      <div className="flex gap-6 justify-center text-xs mt-4">
+      <div className="flex flex-col gap-3 text-xs">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-sm bg-[#3b82f6]"></div>
           <span className="text-sub-text">Uptime 165 days</span>
-          <span className="font-semibold text-header">99%</span>
+          <span className="font-semibold text-header ml-auto">99%</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-sm bg-[#ef4444]"></div>
           <span className="text-sub-text">Downtime 2 days</span>
-          <span className="font-semibold text-header">1%</span>
+          <span className="font-semibold text-header ml-auto">1%</span>
         </div>
       </div>
     </div>

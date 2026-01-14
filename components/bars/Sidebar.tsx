@@ -37,9 +37,10 @@ const menuItems = [
 
 interface SidebarProps {
   isOpen: boolean;
+  onToggle: () => void;
 }
 
-export default function Sidebar({ isOpen }: SidebarProps) {
+export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>("Billing");
@@ -59,117 +60,181 @@ export default function Sidebar({ isOpen }: SidebarProps) {
   };
 
   return (
-    <aside
-      className={`bg-foreground border-r border-bd-primary flex flex-col fixed left-0 top-0 bottom-0 z-40 transition-all duration-300 ${
-        isOpen ? "w-64" : "w-0 overflow-hidden"
-      }`}
-    >
-      {/* Logo */}
-      <div className="px-6 py-5 border-b border-bd-primary flex items-center justify-between">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm">
-            S
+    <>
+      {/* Collapsed Sidebar - Always visible */}
+      {!isOpen && (
+        <aside className="bg-foreground border-r border-bd-primary flex flex-col fixed left-0 top-0 bottom-0 z-40 w-16">
+          {/* Logo at the very top - no border */}
+          <div className="px-3 pt-5 pb-4 flex items-center justify-center">
+            <Link href="/dashboard" className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm">
+              S
+            </Link>
           </div>
-          <span className="text-xl font-bold text-header">Synkup</span>
-        </Link>
-      </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
-          const hasSubmenu = item.submenu && item.submenu.length > 0;
-          const isSubmenuOpen = openSubmenu === item.label;
+          {/* Navigation Icons */}
+          <nav className="flex-1 px-2 py-2 overflow-y-auto">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive =
+                pathname === item.href || pathname.startsWith(item.href + "/");
 
-          return (
-            <div key={item.href}>
-              {hasSubmenu ? (
-                <>
-                  <button
-                    onClick={() => toggleSubmenu(item.label)}
-                    className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all ${
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-sub-text hover:bg-background hover:text-header"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon className="w-5 h-5" />
-                      <span className="text-sm font-medium">{item.label}</span>
-                    </div>
-                    {isSubmenuOpen ? (
-                      <ChevronDown className="w-4 h-4" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4" />
-                    )}
-                  </button>
-
-                  {/* Submenu */}
-                  {isSubmenuOpen && (
-                    <div className="ml-11 space-y-1 mb-2">
-                      {item.submenu.map((subItem) => {
-                        const isSubActive = pathname === subItem.href;
-                        return (
-                          <Link
-                            key={subItem.href}
-                            href={subItem.href}
-                            className={`block px-3 py-2 rounded-lg text-sm transition-all ${
-                              isSubActive
-                                ? "text-primary font-medium"
-                                : "text-sub-text hover:bg-background hover:text-header"
-                            }`}
-                          >
-                            {subItem.label}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
-              ) : (
+              return (
                 <Link
+                  key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all ${
+                  className={`flex items-center justify-center w-12 h-12 rounded-lg mb-2 transition-all ${
                     isActive
                       ? "bg-primary/10 text-primary"
                       : "text-sub-text hover:bg-background hover:text-header"
                   }`}
+                  title={item.label}
                 >
                   <Icon className="w-5 h-5" />
-                  <span className="text-sm font-medium">{item.label}</span>
                 </Link>
-              )}
-            </div>
-          );
-        })}
-      </nav>
+              );
+            })}
+          </nav>
 
-      {/* Footer */}
-      <div className="p-3 border-t border-bd-primary space-y-1">
-        <Link
-          href="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sub-text hover:bg-background hover:text-header transition-all"
-        >
-          <SettingsIcon className="w-5 h-5" />
-          <span className="text-sm font-medium">Settings</span>
-        </Link>
-        <Link
-          href="/support"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sub-text hover:bg-background hover:text-header transition-all"
-        >
-          <HelpCircle className="w-5 h-5" />
-          <span className="text-sm font-medium">Support</span>
-        </Link>
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sub-text hover:bg-background hover:text-red transition-all"
-        >
-          <LogOut className="w-5 h-5" />
-          <span className="text-sm font-medium">Log Out</span>
-        </button>
-      </div>
-    </aside>
+          {/* Footer Icons */}
+          <div className="p-2 border-t border-bd-primary space-y-2">
+            <Link
+              href="/settings"
+              className="flex items-center justify-center w-12 h-12 rounded-lg text-sub-text hover:bg-background hover:text-header transition-all"
+              title="Settings"
+            >
+              <SettingsIcon className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/support"
+              className="flex items-center justify-center w-12 h-12 rounded-lg text-sub-text hover:bg-background hover:text-header transition-all"
+              title="Support"
+            >
+              <HelpCircle className="w-5 h-5" />
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="w-12 h-12 flex items-center justify-center rounded-lg text-sub-text hover:bg-background hover:text-red transition-all"
+              title="Log Out"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
+        </aside>
+      )}
+
+      {/* Expanded Sidebar */}
+      {isOpen && (
+        <aside className="bg-foreground border-r border-bd-primary flex flex-col fixed left-0 top-0 bottom-0 z-40 w-64 transition-all duration-300">
+          {/* Logo */}
+          <div className="px-6 py-5 border-b border-bd-primary flex items-center justify-between">
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                S
+              </div>
+              <span className="text-xl font-bold text-header">Synkup</span>
+            </Link>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 px-3 py-4 overflow-y-auto">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive =
+                pathname === item.href || pathname.startsWith(item.href + "/");
+              const hasSubmenu = item.submenu && item.submenu.length > 0;
+              const isSubmenuOpen = openSubmenu === item.label;
+
+              return (
+                <div key={item.href}>
+                  {hasSubmenu ? (
+                    <>
+                      <button
+                        onClick={() => toggleSubmenu(item.label)}
+                        className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all ${
+                          isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-sub-text hover:bg-background hover:text-header"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className="w-5 h-5" />
+                          <span className="text-sm font-medium">
+                            {item.label}
+                          </span>
+                        </div>
+                        {isSubmenuOpen ? (
+                          <ChevronDown className="w-4 h-4" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4" />
+                        )}
+                      </button>
+
+                      {/* Submenu */}
+                      {isSubmenuOpen && (
+                        <div className="ml-11 space-y-1 mb-2">
+                          {item.submenu.map((subItem) => {
+                            const isSubActive = pathname === subItem.href;
+                            return (
+                              <Link
+                                key={subItem.href}
+                                href={subItem.href}
+                                className={`block px-3 py-2 rounded-lg text-sm transition-all ${
+                                  isSubActive
+                                    ? "text-primary font-medium"
+                                    : "text-sub-text hover:bg-background hover:text-header"
+                                }`}
+                              >
+                                {subItem.label}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all ${
+                        isActive
+                          ? "bg-primary/10 text-primary"
+                          : "text-sub-text hover:bg-background hover:text-header"
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="text-sm font-medium">{item.label}</span>
+                    </Link>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+
+          {/* Footer */}
+          <div className="p-3 border-t border-bd-primary space-y-1">
+            <Link
+              href="/settings"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sub-text hover:bg-background hover:text-header transition-all"
+            >
+              <SettingsIcon className="w-5 h-5" />
+              <span className="text-sm font-medium">Settings</span>
+            </Link>
+            <Link
+              href="/support"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sub-text hover:bg-background hover:text-header transition-all"
+            >
+              <HelpCircle className="w-5 h-5" />
+              <span className="text-sm font-medium">Support</span>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sub-text hover:bg-background hover:text-red transition-all"
+            >
+              <LogOut className="w-5 h-5" />
+              <span className="text-sm font-medium">Log Out</span>
+            </button>
+          </div>
+        </aside>
+      )}
+    </>
   );
 }

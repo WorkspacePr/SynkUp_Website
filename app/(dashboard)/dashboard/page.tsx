@@ -16,7 +16,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-6 lg:p-8">
       <h1 className="text-3xl font-bold text-header mb-8">Dashboard</h1>
 
       {/* Stats Grid */}
@@ -74,12 +74,12 @@ export default function DashboardPage() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
         <ModuleUsageChart />
-        <ActiveUsersChart />
+        <PercentageChart />
       </div>
 
-      {/* Percentage Chart */}
+      {/* Active Users Chart */}
       <div className="grid grid-cols-1 mb-8">
-        <PercentageChart />
+        <ActiveUsersChart />
       </div>
 
       {/* Recent Activities */}
