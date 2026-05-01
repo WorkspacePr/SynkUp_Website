@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import CustomButton from "../ui/CustomButton";
+import CustomButton from "../../ui/CustomButton";
 
 export default function PasswordChangedForm() {
   const router = useRouter();

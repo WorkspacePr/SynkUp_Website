@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import TwoFactorForm from "@/components/forms/TwoFactorForm";
+import TwoFactorForm from "@/components/forms/AuthForms/TwoFactorForm";
 
 export default function TwoFactorPage() {
   return (

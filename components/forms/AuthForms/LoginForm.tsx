@@ -6,6 +6,7 @@ import CustomButton from "@/components/ui/CustomButton";
 import { StyledCheckbox } from "@/components/ui/CustomCheckbox";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { extractErrorMessage, safeJsonParse } from "@/lib/error-utils";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -33,16 +34,18 @@ export default function LoginForm() {
         body: JSON.stringify({ email: emailTrim, password }),
       });
       const txt = await res.text();
-      const data = txt ? JSON.parse(txt) : {};
-      if (!res.ok) throw new Error(data?.message || "Login failed");
+      const data = safeJsonParse(txt) as { user_id?: number | string };
+      if (!res.ok) {
+        throw new Error(extractErrorMessage(data) || "Login failed");
+      }
 
       router.push(
-        `/two-factor?user_id=${data.user_id}` +
+        `/two-factor?user_id=${data.user_id ?? ""}` +
           `&email=${encodeURIComponent(emailTrim)}` +
           `&remember=${remember ? "1" : "0"}`
       );
-    } catch (err: any) {
-      setError(err?.message || "Login failed");
+    } catch (err: unknown) {
+      setError(extractErrorMessage(err) || "Login failed");
     } finally {
       setLoading(false);
     }

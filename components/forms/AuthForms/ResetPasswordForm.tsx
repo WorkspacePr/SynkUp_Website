@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import TextInput from "@/components/ui/TextInput";
 import CustomButton from "@/components/ui/CustomButton";
 import { useRouter, useSearchParams } from "next/navigation";
+import { extractErrorMessage, safeJsonParse } from "@/lib/error-utils";
 
 export default function ResetPasswordForm() {
   const router = useRouter();
@@ -47,16 +48,15 @@ export default function ResetPasswordForm() {
         body: JSON.stringify({ uid, token, new_password: password }),
       });
       const txt = await res.text();
-      let data: any = {};
-      try {
-        data = txt ? JSON.parse(txt) : {};
-      } catch {}
+      const data = safeJsonParse(txt);
 
-      if (!res.ok) throw new Error(data?.message || "Could not reset password");
+      if (!res.ok) {
+        throw new Error(extractErrorMessage(data) || "Could not reset password");
+      }
 
       router.replace("/password-changed");
-    } catch (e: any) {
-      setErr(e?.message || "Could not reset password");
+    } catch (e: unknown) {
+      setErr(extractErrorMessage(e) || "Could not reset password");
     } finally {
       setBusy(false);
     }

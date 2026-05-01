@@ -5,12 +5,15 @@ import CustomButton from "@/components/ui/CustomButton";
 import Link from "next/link";
 import BackIcon from "@/assests/icons/svg/BackIcon";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { extractErrorMessage, safeJsonParse } from "@/lib/error-utils";
 
 export default function TwoFactorForm() {
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const sp = useSearchParams();
   const email = sp.get("email") ?? "";
-  const userId = Number(sp.get("user_id") ?? "0");
+  // const userId = Number(sp.get("user_id") ?? "0");
 
   const CODE_LENGTH = 6;
   const [otp, setOtp] = useState<string[]>(Array(CODE_LENGTH).fill(""));
@@ -24,11 +27,10 @@ export default function TwoFactorForm() {
   const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
-    if (!userId) {
-      // if user navigates here directly, bounce them back
+    if (!email) {
       router.replace("/login");
     }
-  }, [userId, router]);
+  }, [email]);
 
   const [mounted, setMounted] = useState(false);
   const [suppressGuard, setSuppressGuard] = useState(false);
@@ -67,7 +69,7 @@ export default function TwoFactorForm() {
   // Handle a single-digit change
   const handleChange = (
     index: number,
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const digit = e.target.value.replace(/\D/g, "").slice(-1); // keep last numeric
     if (!/^\d?$/.test(digit)) return; // block non-digits
@@ -95,7 +97,7 @@ export default function TwoFactorForm() {
   // Keyboard navigation (Backspace, Arrow keys)
   const handleKeyDown = (
     index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
+    e: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -126,13 +128,11 @@ export default function TwoFactorForm() {
 
       // Defensive parse to avoid "Unexpected token <" if something slips
       const txt = await res.text();
-      let data: any = {};
-      try {
-        data = txt ? JSON.parse(txt) : {};
-      } catch {}
+      const data = safeJsonParse(txt);
 
       if (res.ok) {
         // Refresh the router to pick up new cookies
+        await refreshUser();
         router.refresh();
 
         // Small delay to ensure cookie is set
@@ -142,7 +142,7 @@ export default function TwoFactorForm() {
         const redirect = params.get("redirect") || "/dashboard";
         router.push(redirect);
       } else {
-        setError(data.message);
+        setError(extractErrorMessage(data) || "Verification failed");
       }
 
       try {
@@ -150,8 +150,8 @@ export default function TwoFactorForm() {
       } catch {}
 
       // router.replace("/dashboard");
-    } catch (e: any) {
-      setError(e?.message || "Verification failed");
+    } catch (e: unknown) {
+      setError(extractErrorMessage(e) || "Verification failed");
     } finally {
       setLoading(false);
     }
@@ -174,18 +174,20 @@ export default function TwoFactorForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Could not resend code");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(extractErrorMessage(data) || "Could not resend code");
+      }
       setCooldown(60); // 60s lockout (tweak as you like)
-    } catch (e: any) {
-      setError(e?.message || "Could not resend code");
+    } catch (e: unknown) {
+      setError(extractErrorMessage(e) || "Could not resend code");
     } finally {
       setResendLoading(false);
     }
   };
 
   const handlePaste = (
-    e: React.ClipboardEvent<HTMLDivElement | HTMLInputElement>
+    e: React.ClipboardEvent<HTMLDivElement | HTMLInputElement>,
   ) => {
     const data = (e.clipboardData?.getData("text") || "").replace(/\D/g, "");
     if (!data) return;
@@ -278,11 +280,11 @@ export default function TwoFactorForm() {
           {resendLoading
             ? "Sending…"
             : cooldown > 0
-            ? `Resend in ${String(Math.floor(cooldown / 60)).padStart(
-                2,
-                "0"
-              )}:${String(cooldown % 60).padStart(2, "0")}`
-            : "Resend code"}
+              ? `Resend in ${String(Math.floor(cooldown / 60)).padStart(
+                  2,
+                  "0",
+                )}:${String(cooldown % 60).padStart(2, "0")}`
+              : "Resend code"}
         </button>
       </div>
 

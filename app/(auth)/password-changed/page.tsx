@@ -1,4 +1,4 @@
-import PasswordChangedForm from "@/components/forms/PasswordChangedForm";
+import PasswordChangedForm from "@/components/forms/AuthForms/PasswordChangedForm";
 
 export default function PasswordChangedPage() {
   return (
