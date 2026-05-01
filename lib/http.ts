@@ -1,3 +1,5 @@
+import { cookies } from "next/headers";
+
 export const API_BASE = process.env.DJANGO_API_BASE!;
 
 type Json = Record<string, any>;
@@ -9,17 +11,25 @@ export type FetchInit = Omit<RequestInit, "body" | "headers"> & {
     body?: BodyInit | null;
 };
 
+
 export async function apiFetch<T = any>(
     path: string,
     init: FetchInit = {}
 ): Promise<T> {
     const { json, headers = {}, ...rest } = init;
 
+    // 👇 Extract auth_token from cookie
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+
     const res = await fetch(`${API_BASE}${path}`, {
         ...rest,
         cache: "no-store",
         headers: {
-            "Content-Type": json ? "application/json" : headers["Content-Type"] ?? "application/json",
+            "Content-Type": json
+                ? "application/json"
+                : headers["Content-Type"] ?? "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...headers,
         },
         body: json ? JSON.stringify(json) : init.body ?? null,
@@ -27,12 +37,17 @@ export async function apiFetch<T = any>(
 
     const text = await res.text();
     let data: any = {};
-    try { data = text ? JSON.parse(text) : {}; } catch { data = { __raw: text }; }
+    try {
+        data = text ? JSON.parse(text) : {};
+    } catch {
+        data = { __raw: text };
+    }
 
     if (!res.ok) {
         const msg = data?.detail || data?.message || `HTTP ${res.status}`;
         throw Object.assign(new Error(msg), { status: res.status, data });
     }
+
     return data as T;
 }
 

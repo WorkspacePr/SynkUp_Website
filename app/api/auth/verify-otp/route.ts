@@ -9,6 +9,8 @@ interface VerifyOTPResponse {
     };
     user: any;
 }
+const ONE_DAY_SECONDS = 60 * 60 * 24;
+const TWENTY_ONE_DAYS_SECONDS = ONE_DAY_SECONDS * 21;
 
 export async function POST(req: Request) {
     try {
@@ -58,27 +60,38 @@ export async function POST(req: Request) {
             );
         }
 
-        console.log("Token received successfully");
+        console.log("Token received successfully:", accessToken, refreshToken);
 
         const isProd = process.env.NODE_ENV === "production";
         const res = NextResponse.json({ ok: true, user: data.user });
 
         // Set the access token cookie
+        const authCookieMaxAge = remember ? TWENTY_ONE_DAYS_SECONDS : ONE_DAY_SECONDS;
+
         res.cookies.set("auth_token", accessToken, {
             httpOnly: true,
             secure: isProd,
             sameSite: "lax",
             path: "/",
-            ...(remember ? { maxAge: 60 * 60 * 24 * 30 } : { maxAge: 60 * 60 * 24 }), // 30 days or 1 day
+            maxAge: authCookieMaxAge,
         });
 
-        // Optionally store refresh token as well
+        // Store refresh token with the same duration as auth cookie.
         res.cookies.set("refresh_token", refreshToken, {
             httpOnly: true,
             secure: isProd,
             sameSite: "lax",
             path: "/",
-            maxAge: 60 * 60 * 24 * 30, // 30 days
+            maxAge: authCookieMaxAge,
+        });
+
+        // Persist remember preference so refresh route can keep the same duration.
+        res.cookies.set("remember_me", remember ? "1" : "0", {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: "lax",
+            path: "/",
+            maxAge: authCookieMaxAge,
         });
 
         return res;

@@ -5,6 +5,7 @@ import TextInput from "@/components/ui/TextInput";
 import CustomButton from "@/components/ui/CustomButton";
 import Link from "next/link";
 import BackIcon from "@/assests/icons/svg/BackIcon";
+import { extractErrorMessage } from "@/lib/error-utils";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -24,11 +25,17 @@ export default function ForgotPasswordForm() {
 
     setBusy(true);
     try {
-      await fetch("/api/auth/password-reset/request", {
+      const res = await fetch("/api/auth/password-reset/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: v }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(
+          extractErrorMessage(data) || "Could not send reset link",
+        );
+      }
       // Endpoint always responds with success text (even if email doesn't exist)
       setDone(true);
     } catch {

@@ -11,6 +11,15 @@
   --black: #000000;
   --white: #ffffff;
   --red: #ff4040;
+  --toast-info-bg: #ffffff;
+  --toast-info-border: #e4e4e7;
+  --toast-info-text: #0f172a;
+  --toast-success-bg: #e6fffb;
+  --toast-success-border: #0d9488;
+  --toast-success-text: #115e59;
+  --toast-error-bg: #fff1f2;
+  --toast-error-border: #ff4040;
+  --toast-error-text: #9f1239;
 
   --bd-primary: #e4e4e7;
 
@@ -34,6 +43,15 @@
   --color-black: var(--black);
   --color-white: var(--white);
   --color-red: var(--red);
+  --color-toast-info-bg: var(--toast-info-bg);
+  --color-toast-info-border: var(--toast-info-border);
+  --color-toast-info-text: var(--toast-info-text);
+  --color-toast-success-bg: var(--toast-success-bg);
+  --color-toast-success-border: var(--toast-success-border);
+  --color-toast-success-text: var(--toast-success-text);
+  --color-toast-error-bg: var(--toast-error-bg);
+  --color-toast-error-border: var(--toast-error-border);
+  --color-toast-error-text: var(--toast-error-text);
 
   --color-bd-primary: var(--bd-primary);
 
@@ -65,6 +83,15 @@
   --input-text: #ffffff;
 
   --input-bg: #0f172a;
+  --toast-info-bg: #1e293b;
+  --toast-info-border: #334155;
+  --toast-info-text: #e2e8f0;
+  --toast-success-bg: #0f2f2b;
+  --toast-success-border: #14b8a6;
+  --toast-success-text: #99f6e4;
+  --toast-error-bg: #2b0f14;
+  --toast-error-border: #ff6b6b;
+  --toast-error-text: #fecdd3;
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -80,6 +107,32 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.toast {
+  border: 1px solid;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+}
+
+.toast--info {
+  background: var(--toast-info-bg);
+  border-color: var(--toast-info-border);
+  color: var(--toast-info-text);
+}
+
+.toast--success {
+  background: var(--toast-success-bg);
+  border-color: var(--toast-success-border);
+  color: var(--toast-success-text);
+}
+
+.toast--error {
+  background: var(--toast-error-bg);
+  border-color: var(--toast-error-border);
+  color: var(--toast-error-text);
 }
 
 @keyframes otp-shake {
