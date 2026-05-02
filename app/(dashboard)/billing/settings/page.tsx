@@ -60,6 +60,35 @@ export default function BillingSettingsPage() {
           </select>
         </div>
 
+        {/*Plan & Status*/}
+        <div className="bg-foreground rounded-xl p-6 border border-bd-primary">
+          <div className="space-y-4">
+            {/* Plan */}
+            <div>
+              <label className="block text-sm font-semibold text-header mb-3">
+                Plan
+              </label>
+              <select className="w-full px-4 py-3 border border-bd-primary rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 bg-input-bg text-input-text">
+                <option>₦ 10,000.00</option>
+                <option>₦ 10,000.00</option>
+                <option>₦ 10,000.00</option>
+              </select>
+            </div>
+
+            {/* Status */}
+            <div>
+              <label className="block text-sm font-semibold text-header mb-3">
+                Status
+              </label>
+              <select className="w-full px-4 py-3 border border-bd-primary rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 bg-input-bg text-input-text">
+                <option>Pending</option>
+                <option>Inactive</option>
+                <option>Active</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         {/* Billing Cycle */}
         <div className="bg-foreground rounded-xl p-6 border border-bd-primary">
           <label className="block text-sm font-semibold text-header mb-3">
@@ -103,14 +132,18 @@ export default function BillingSettingsPage() {
               onChange={(e) => setApplyTaxAutomatically(e.target.checked)}
               className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
             />
-            <span className="text-sm text-sub-text">Apply tax automatically to all invoices</span>
+            <span className="text-sm text-sub-text">
+              Apply tax automatically to all invoices
+            </span>
           </label>
         </div>
 
         {/* Payment Gateway Settings */}
         <div className="bg-foreground rounded-xl p-6 border border-bd-primary">
-          <h3 className="text-lg font-semibold text-header mb-4">Payment Gateway Settings</h3>
-          
+          <h3 className="text-lg font-semibold text-header mb-4">
+            Payment Gateway Settings
+          </h3>
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-header mb-3">
@@ -171,15 +204,19 @@ export default function BillingSettingsPage() {
 
             <div className="flex items-center gap-2 text-sm">
               <div className="w-2 h-2 rounded-full bg-green-500"></div>
-              <span className="text-sub-text">STATUS: All billing settings up to date</span>
+              <span className="text-sub-text">
+                STATUS: All billing settings up to date
+              </span>
             </div>
           </div>
         </div>
 
         {/* Notification Settings */}
         <div className="bg-foreground rounded-xl p-6 border border-bd-primary">
-          <h3 className="text-lg font-semibold text-header mb-4">Notification Settings</h3>
-          
+          <h3 className="text-lg font-semibold text-header mb-4">
+            Notification Settings
+          </h3>
+
           <div className="space-y-3">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -188,7 +225,9 @@ export default function BillingSettingsPage() {
                 onChange={(e) => setSendPaymentReminders(e.target.checked)}
                 className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
               />
-              <span className="text-sm text-sub-text">Send payment reminders before due date</span>
+              <span className="text-sm text-sub-text">
+                Send payment reminders before due date
+              </span>
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -198,7 +237,9 @@ export default function BillingSettingsPage() {
                 onChange={(e) => setSendOverdueAlerts(e.target.checked)}
                 className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
               />
-              <span className="text-sm text-sub-text">Send overdue invoice alerts</span>
+              <span className="text-sm text-sub-text">
+                Send overdue invoice alerts
+              </span>
             </label>
           </div>
         </div>
