@@ -7,6 +7,21 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/components/common/ToastProvider";
 import { useAuthedFetch } from "@/lib/use-authed-fetch";
 import { extractErrorMessage } from "@/lib/error-utils";
+import { FilterDropdown } from "@/components/ui/FilterDropdown";
+
+const STATUS_OPTIONS = [
+  { label: "Active", value: "active" },
+  { label: "Pending", value: "pending" },
+  { label: "Trial", value: "trial" },
+  { label: "Suspended", value: "suspended" },
+  { label: "Inactive", value: "inactive" },
+];
+
+const DATE_RANGE_OPTIONS = [
+  { label: "This Month", value: "month" },
+  { label: "This Year", value: "year" },
+  { label: "All Time", value: "all" },
+];
 
 export default function OrganizationsPage() {
   const router = useRouter();
@@ -29,6 +44,8 @@ export default function OrganizationsPage() {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [dateRange, setDateRange] = useState("");
 
   // Debounce search
   useEffect(() => {
@@ -39,18 +56,29 @@ export default function OrganizationsPage() {
     return () => clearTimeout(timeout);
   }, [search]);
 
+  // Add a useEffect to re-fetch when filters change
   useEffect(() => {
-    fetchOrganizations(page);
-  }, [page]);
+    fetchOrganizations(1, search, statusFilter, dateRange);
+  }, [statusFilter, dateRange]);
 
-  const fetchOrganizations = async (pageNumber = 1, searchTerm = "") => {
+  const fetchOrganizations = async (
+    pageNumber = 1,
+    searchTerm = "",
+    status = statusFilter,
+    range = dateRange,
+  ) => {
     setLoading(true);
     setError(null);
 
     try {
-      const res = await authedFetch(
-        `/api/dashboard/organizations?page=${pageNumber}&search=${searchTerm}`,
-      );
+      const params = new URLSearchParams({
+        page: String(pageNumber),
+        ...(searchTerm && { search: searchTerm }),
+        ...(status && { status }),
+        ...(range && range !== "all" && { date_range: range }),
+      });
+
+      const res = await authedFetch(`/api/dashboard/organizations?${params}`);
 
       if (!res) {
         return;
@@ -123,17 +151,25 @@ export default function OrganizationsPage() {
             </div>
 
             {/* Filter */}
-            <Filter className="text-gray-500 cursor-pointer" size={18} />
-
-            {/* Date Filters */}
-            <div className="flex items-center gap-4 text-sm">
-              <button className="text-teal-600 font-medium">Month</button>
-              <button className="text-gray-500 hover:text-gray-800">
-                Year
-              </button>
-              <button className="text-gray-500 hover:text-gray-800">
-                All Time
-              </button>
+            <div className="flex items-center gap-3">
+              <FilterDropdown
+                label="Status"
+                options={STATUS_OPTIONS}
+                selected={statusFilter}
+                onSelect={(val: any) => {
+                  setStatusFilter(val);
+                  setPage(1);
+                }}
+              />
+              <FilterDropdown
+                label="Date Range"
+                options={DATE_RANGE_OPTIONS}
+                selected={dateRange}
+                onSelect={(val: any) => {
+                  setDateRange(val);
+                  setPage(1);
+                }}
+              />
             </div>
           </div>
         </div>

@@ -1,0 +1,33 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "auth",
+    "auth-fix",
+    "feature/my-updates",
+    "main",
+    "navbar/sidbar-reusable-components",
+    "organisation",
+    "origin",
+    "recovery/security-cleanup-2026-10-30-main"
+  ],
+  "parent": {
+    "auth": "main",
+    "auth-fix": "auth",
+    "feature/my-updates": "main",
+    "main": null,
+    "navbar/sidbar-reusable-components": "main",
+    "organisation": "main",
+    "origin": "main",
+    "recovery/security-cleanup-2026-10-30-main": "main"
+  },
+  "order": [
+    "main",
+    "auth",
+    "feature/my-updates",
+    "navbar/sidbar-reusable-components",
+    "organisation",
+    "origin",
+    "recovery/security-cleanup-2026-10-30-main",
+    "auth-fix"
+  ]
+}
