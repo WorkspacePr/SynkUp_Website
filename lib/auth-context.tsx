@@ -4,11 +4,24 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface User {
-  id: number;
+  user_id: number;
+  username: string;
   email: string;
   first_name?: string;
   last_name?: string;
-  // Add other user fields
+  is_active?: boolean;
+  is_verified?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  profile?: {
+    profile_id: number;
+    full_name?: string;
+    bio?: string;
+    avatar_url?: string;
+    contact_number?: string;
+    address?: string;
+    user: number;
+  };
 }
 
 interface AuthContextType {
@@ -38,10 +51,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = async () => {
     try {
-      const res = await fetch("/api/auth/me");
+      const res = await fetch("/api/auth/profile");
       if (res.ok) {
         const data = await res.json();
-        setUser(data.user);
+        setUser(data.user ?? null);
       } else {
         setUser(null);
       }
