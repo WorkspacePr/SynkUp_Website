@@ -1,10 +1,11 @@
 import { LucideIcon } from "lucide-react";
+import {ReactNode} from "react";
 
 interface StatsCardProps {
   value: string | number;
   label: string;
   emoji?: string;
-  icon?: LucideIcon;
+  icon?: ReactNode;
   iconColor?: string;
   bgColor: string;
 }
@@ -14,26 +15,24 @@ export default function StatsCard({
   label,
   emoji,
   bgColor,
-  icon: Icon,
-  iconColor,
+  icon,
 }: StatsCardProps) {
   return (
     <div className={`${bgColor} rounded-xl p-6`}>
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-4xl font-bold text-header mb-2">{value}</div>
+          <div className="text-4xl font-bold text-header mb-2">
+            {value}
+          </div>
           <div className="text-sm font-medium text-header whitespace-pre-line">
             {label}
           </div>
         </div>
-        <div className="text-4xl">{emoji}</div>
-        {Icon && (
-          <Icon
-            className="w-10 h-10"
-            style={{ color: iconColor || "var(--primary)" }}
-          />
-        )}
+
+        {emoji && <div className="text-4xl">{emoji}</div>}
+
+        {icon}
       </div>
     </div>
   );
-}10
+}
