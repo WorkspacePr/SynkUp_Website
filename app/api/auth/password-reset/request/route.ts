@@ -20,10 +20,9 @@ export async function POST(req: Request) {
                 body: JSON.stringify({ email }),
             });
         } catch (e: any) {
-            // Log the actual error for debugging, but don't expose it
+            // Log status only; upstream responses can contain sensitive data.
             console.error("PASSWORD_RESET_REQUEST_ERROR:", {
-                status: e?.status,
-                error: e?.data
+                status: e?.status
             });
 
             // Don't leak details—still return a generic success
@@ -34,9 +33,9 @@ export async function POST(req: Request) {
             message: "If that email exists, we've sent instructions."
         });
 
-    } catch (err: any) {
+    } catch {
         // Log unexpected errors for debugging
-        console.error("PASSWORD_RESET_REQUEST_UNEXPECTED_ERROR:", err);
+        console.error("PASSWORD_RESET_REQUEST_UNEXPECTED_ERROR");
 
         // Always a generic success to avoid enumeration
         return NextResponse.json({
