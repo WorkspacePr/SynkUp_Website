@@ -53,14 +53,12 @@ export async function POST(req: Request) {
         const refreshToken = data.tokens?.refresh;
 
         if (!accessToken) {
-            console.error("ERROR: No access token in response!", data);
+            console.error("Authentication response did not contain an access token.");
             return NextResponse.json(
                 { message: "Authentication failed - no token received" },
                 { status: 500 }
             );
         }
-
-        console.log("Token received successfully:", accessToken, refreshToken);
 
         const isProd = process.env.NODE_ENV === "production";
         const res = NextResponse.json({ ok: true, user: data.user });
@@ -121,11 +119,7 @@ export async function POST(req: Request) {
             message = err.message;
         }
 
-        console.error("VERIFY_OTP_ERROR:", {
-            status,
-            message,
-            rawError: err?.data
-        });
+        console.error("VERIFY_OTP_ERROR:", { status });
 
         return NextResponse.json({ message, errors }, { status });
     }
