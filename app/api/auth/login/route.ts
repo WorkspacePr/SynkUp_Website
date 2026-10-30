@@ -64,11 +64,7 @@ export async function POST(req: Request) {
             message = err.message;
         }
 
-        console.error("LOGIN_ERROR:", {
-            status,
-            message,
-            rawError: err?.data
-        });
+        console.error("LOGIN_ERROR:", { status });
 
         return NextResponse.json(
             {

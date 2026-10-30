@@ -39,11 +39,7 @@ export async function GET(req: Request) {
             }
         }
 
-        console.error("FETCH_USER_ERROR:", { 
-            status, 
-            message, 
-            rawError: err?.data 
-        });
+        console.error("FETCH_USER_ERROR:", { status });
         
         return NextResponse.json({ message }, { status });
     }

@@ -41,8 +41,8 @@ export async function POST(req: Request) {
         });
 
         return res;
-    } catch (err: any) {
-        console.error("TOKEN_REFRESH_ERROR:", err);
+    } catch {
+        console.error("TOKEN_REFRESH_ERROR");
         return NextResponse.json(
             { message: "Failed to refresh token" },
             { status: 401 }

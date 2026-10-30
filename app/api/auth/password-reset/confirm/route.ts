@@ -58,11 +58,7 @@ export async function POST(req: Request) {
             message = err.message;
         }
 
-        console.error("PASSWORD_RESET_CONFIRM_ERROR:", {
-            status,
-            message,
-            rawError: err?.data
-        });
+        console.error("PASSWORD_RESET_CONFIRM_ERROR:", { status });
 
         return NextResponse.json({ message, errors }, { status });
     }
