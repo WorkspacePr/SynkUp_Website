@@ -66,11 +66,7 @@ export async function POST(req: Request) {
             message = err.message;
         }
 
-        console.error("RESEND_OTP_ERROR:", {
-            status,
-            message,
-            rawError: err?.data
-        });
+        console.error("RESEND_OTP_ERROR:", { status });
 
         return NextResponse.json({ message, errors }, { status });
     }
